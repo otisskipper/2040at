@@ -776,6 +776,15 @@ textarea:focus {
   margin: 0;
   font-size: 13px;
   color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+.panel__note--good {
+  color: #2e7d32;
+  font-weight: 600;
+}
+.panel__note--bad {
+  color: #c0392b;
+  font-weight: 600;
 }
 .btn--danger {
   background: #c0392b;
