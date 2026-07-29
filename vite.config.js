@@ -38,12 +38,15 @@ function clientMetadata(siteUrl) {
   };
 }
 
+// The canonical public origin. Deliberately pinned rather than derived from
+// VERCEL_PROJECT_PRODUCTION_URL: that variable reports whichever hostname Vercel
+// considers primary, which is not necessarily the domain users arrive on, and a
+// mismatch silently sends the OAuth redirect to the wrong site.
+const SITE_URL = 'https://2040at.vercel.app';
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const siteUrl =
-    env.VITE_SITE_URL ||
-    (env.VERCEL_PROJECT_PRODUCTION_URL && `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
-    'https://2040at.vercel.app';
+  const siteUrl = env.VITE_SITE_URL || SITE_URL;
 
   return {
     define: {
