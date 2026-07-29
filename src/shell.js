@@ -1,6 +1,6 @@
 // Shared chrome: the header (logo, player search, auth control).
 
-import { el, clear, toast } from './ui.js';
+import { el, clear, toast, wordmark } from './ui.js';
 import { getSession, login, logout, onAuthChange } from './session.js';
 import { fetchProfile, searchActors } from './records.js';
 
@@ -172,10 +172,7 @@ function createAuthControl() {
 export function renderHeader() {
   const auth = createAuthControl();
   const header = el('header', { class: 'topbar' }, [
-    el('a', { class: 'brand', href: '#/' }, [
-      el('span', { class: 'brand__mark', text: '2040' }),
-      el('span', { class: 'brand__at', text: 'AT' }),
-    ]),
+    el('a', { class: 'brand', href: '#/' }, wordmark()),
     el('div', { class: 'topbar__right' }, [createSearch(), auth]),
   ]);
   header._cleanup = () => auth._cleanup?.();

@@ -1,7 +1,7 @@
 // Home screen: the board, the score boxes, and the post-score modal.
 
 import { Game, SIZE } from './game.js';
-import { el, clear, num, formatDuration, toast } from './ui.js';
+import { el, clear, num, formatDuration, toast, wordmark } from './ui.js';
 import { getSession, login, onAuthChange } from './session.js';
 import { postScore } from './records.js';
 import { MAX_COMMENT } from './config.js';
@@ -308,7 +308,7 @@ export function renderGame() {
 
   const view = el('main', { class: 'view view--game' }, [
     el('section', { class: 'hero' }, [
-      el('h1', { class: 'hero__title', text: '2040AT' }),
+      el('h1', { class: 'hero__title' }, wordmark()),
       el('p', { class: 'hero__sub' }, [
         'Join the tiles, get to ',
         el('b', { text: '2048' }),

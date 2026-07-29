@@ -9,6 +9,12 @@
   --panel: #ffffff;
   --line: #e6ded3;
 
+  /* Wordmark: two steps of the tile ramp, then AT in protocol blue.
+     Darkened from the raw tile hues so they stay legible as text on cream. */
+  --mark-20: #b87d1a;
+  --mark-40: #d8512e;
+  --mark-at: #0a74d8;
+
   --board-size: min(460px, calc(100vw - 32px));
   --gap: calc(var(--board-size) * 0.028);
   --cell: calc((var(--board-size) - 5 * var(--gap)) / 4);
@@ -131,12 +137,9 @@ textarea:focus {
   font-size: 22px;
   letter-spacing: -0.02em;
 }
-.brand__mark {
-  color: var(--ink);
-}
-.brand__at {
-  color: #edc22e;
-}
+.wm--20 { color: var(--mark-20); }
+.wm--40 { color: var(--mark-40); }
+.wm--at { color: var(--mark-at); }
 
 .topbar__right {
   margin-left: auto;

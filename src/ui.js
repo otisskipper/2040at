@@ -19,6 +19,19 @@ export function el(tag, props = {}, children = []) {
   return node;
 }
 
+/**
+ * "2040AT" split into its three parts: the two tile-palette halves of the game,
+ * then AT in protocol blue. Shared by the header brand and the hero title so
+ * they can never drift.
+ */
+export function wordmark() {
+  return [
+    el('span', { class: 'wm wm--20', text: '20' }),
+    el('span', { class: 'wm wm--40', text: '40' }),
+    el('span', { class: 'wm wm--at', text: 'AT' }),
+  ];
+}
+
 export function clear(node) {
   while (node.firstChild) node.removeChild(node.firstChild);
   return node;
