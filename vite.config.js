@@ -1,4 +1,5 @@
 import { defineConfig, loadEnv } from 'vite';
+import { SCOPE } from './src/config.js';
 
 /**
  * The OAuth client metadata document must be served at exactly the URL used as
@@ -13,7 +14,9 @@ function clientMetadata(siteUrl) {
       client_name: '2040AT',
       client_uri: origin,
       redirect_uris: [`${origin}/`],
-      scope: 'atproto transition:generic',
+      // Must match what auth.js requests, or the server rejects the request as
+      // "not declared in the client metadata".
+      scope: SCOPE,
       grant_types: ['authorization_code', 'refresh_token'],
       response_types: ['code'],
       token_endpoint_auth_method: 'none',

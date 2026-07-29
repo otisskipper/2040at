@@ -99,10 +99,10 @@ export async function deleteAllGames(onProgress) {
         report();
         continue;
       } catch (err) {
-        if (isAuthError(err)) {
-          clearSession();
-          throw new Error('Your session expired. Sign in again to delete these.');
-        }
+        // Always fall back rather than interpreting this failure. A batch
+        // rejected on scope grounds looks like an auth error, and treating it
+        // as one would sign the user out mid-delete. If the session really is
+        // dead, the per-record path below says so properly.
         console.warn('[data] applyWrites failed, falling back to deleteRecord', err);
         useBatch = false;
       }

@@ -9,7 +9,23 @@ export const SITE_URL = (
 
 export const COLLECTION = 'app.vercel.twentyfortyat.game';
 
-export const SCOPE = 'atproto transition:generic';
+/**
+ * The bare minimum this app can function on.
+ *
+ * `atproto` is mandatory for any session and grants identity (the DID) only.
+ * The repo permission is scoped to our single collection and to the two actions
+ * we actually perform: createRecord when posting a score, and deleteRecord /
+ * applyWrites when clearing them. No `update`, no blob upload, no rpc.
+ *
+ * This replaces `transition:generic`, which is the deprecated legacy scope and
+ * grants write access to *every* record type in the user's repo plus blob
+ * uploads and preferences — wildly more than a score-poster needs.
+ *
+ * Derived from COLLECTION so the two can never drift apart. The same string is
+ * baked into client-metadata.json at build time; authorization servers reject
+ * any scope the client metadata doesn't declare.
+ */
+export const SCOPE = `atproto repo:${COLLECTION}?action=create&action=delete`;
 
 export const APP_VIEW = 'https://public.api.bsky.app';
 
