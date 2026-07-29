@@ -2,7 +2,7 @@
 
 import { el, clear, num, toast } from './ui.js';
 import { getSession, onAuthChange } from './session.js';
-import { clearLocalData, countMyGames, deleteAllGames, probeScopeEnforcement } from './data.js';
+import { clearLocalData, countMyGames, deleteAllGames } from './data.js';
 import { COLLECTION } from './config.js';
 
 let panel = null;
@@ -130,60 +130,23 @@ function repoSection() {
 }
 
 function scopeSection() {
-  const wrap = el('section', { class: 'panel__section' });
-
-  function paint(session) {
-    clear(wrap).append(
-      el('h3', { class: 'panel__heading', text: 'What this app can touch' }),
-      el('p', { class: 'panel__body' }, [
-        'It asked for permission to create and delete ',
-        el('code', { text: COLLECTION }),
-        ' records, and nothing else — no posts, no profile, no blobs, no email. Your PDS enforces that on every write.',
-      ])
-    );
-
-    if (!session) {
-      wrap.append(el('p', { class: 'panel__note', text: 'Sign in to test it.' }));
-      return;
-    }
-
-    const result = el('p', { class: 'panel__note' });
-    const button = el('button', {
-      class: 'btn btn--ghost',
-      type: 'button',
-      text: 'Test it — try to delete a post',
-    });
-
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      result.textContent = 'Asking your PDS to delete an app.bsky.feed.post record…';
-      try {
-        const { enforced, detail } = await probeScopeEnforcement();
-        result.textContent = enforced ? `Refused, as it should be. ${detail}` : `Not enforced. ${detail}`;
-        result.className = enforced ? 'panel__note panel__note--good' : 'panel__note panel__note--bad';
-      } catch (err) {
-        result.textContent = err.message || 'Probe failed';
-        result.className = 'panel__note';
-      }
-      button.disabled = false;
-    });
-
-    wrap.append(button, result);
-  }
-
-  paint(getSession());
-  wrap._off = onAuthChange(paint);
-  return wrap;
+  return el('section', { class: 'panel__section' }, [
+    el('h3', { class: 'panel__heading', text: 'What this app can touch' }),
+    el('p', { class: 'panel__body' }, [
+      'It asked for permission to create and delete ',
+      el('code', { text: COLLECTION }),
+      ' records, and nothing else — no posts, no profile, no blobs, no email. Your PDS enforces that on every write.',
+    ]),
+  ]);
 }
 
 export function openDataPanel() {
   if (panel) closeDataPanel();
 
   const repo = repoSection();
-  const scope = scopeSection();
   const card = el('div', { class: 'modal__card modal__card--wide' }, [
     el('h2', { class: 'panel__title', text: 'Your data' }),
-    scope,
+    scopeSection(),
     localSection(),
     repo,
     el('button', { class: 'btn btn--ghost', type: 'button', text: 'Close', onclick: closeDataPanel }),
@@ -193,10 +156,7 @@ export function openDataPanel() {
     el('div', { class: 'modal__scrim', onclick: closeDataPanel }),
     card,
   ]);
-  panel._off = () => {
-    repo._off?.();
-    scope._off?.();
-  };
+  panel._off = () => repo._off?.();
 
   document.body.append(panel);
   document.addEventListener('keydown', onEsc);

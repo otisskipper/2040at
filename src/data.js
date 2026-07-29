@@ -53,50 +53,6 @@ export async function clearLocalData() {
   return { dbCleared };
 }
 
-/**
- * Prove the OAuth scope is actually enforced, rather than asking anyone to
- * take the client's word for it.
- *
- * Attempts a delete against a collection we did NOT request permission for,
- * using an rkey that cannot exist. Harmless either way — there is nothing
- * there to remove — but the two failure modes are distinguishable:
- *
- *   403 / scope error   -> the PDS refused on permission grounds. Enforced.
- *   400 RecordNotFound  -> the write was authorised and only failed on lookup,
- *                          meaning the token is broader than it should be.
- */
-export async function probeScopeEnforcement() {
-  const agent = await getAgent();
-  if (!agent) throw new Error('Not signed in');
-
-  const foreign = 'app.bsky.feed.post';
-  const rkey = 'scope-probe-does-not-exist';
-
-  try {
-    await agent.com.atproto.repo.deleteRecord({ repo: agent.did, collection: foreign, rkey });
-    return {
-      enforced: false,
-      detail: `Delete on ${foreign} was accepted. The token is broader than the requested scope.`,
-    };
-  } catch (err) {
-    const status = err?.status ?? 0;
-    const name = err?.error || '';
-    const message = String(err?.message || '');
-    const notFound = /RecordNotFound|Record not found|could not be found/i.test(`${name} ${message}`);
-
-    if (notFound) {
-      return {
-        enforced: false,
-        detail: `${foreign} returned RecordNotFound — the write was permitted, only the record was missing.`,
-      };
-    }
-    return {
-      enforced: true,
-      detail: `${foreign} refused${status ? ` (${status})` : ''}: ${name || message || 'permission denied'}`,
-    };
-  }
-}
-
 /** How many games are in the signed-in user's repo. */
 export async function countMyGames() {
   const agent = await getAgent();
