@@ -1,27 +1,46 @@
 // The whole joke.
 //
-// Keyed on DID, not handle — survives him renaming himself.
+// Keyed on DID, not handle — survives a rename.
 const DAN_DIDS = new Set([
-  'did:plc:yk4dd2qkboz2yv6tpubpc6co',
+  'did:plc:yk4dd2qkboz2yv6tpubpc6co', // dholms.at
+  'did:plc:vndnrhelwmbi3akmertsnmt4', // otis — here to test the bit; remove when done
 ]);
-
-const THRESHOLD = 2048;
 
 export function isDan(did) {
   return DAN_DIDS.has(did);
 }
 
+const rand = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+
+/**
+ * Plausible bad games. Every real 2048 score is a multiple of 4 (each merge
+ * adds the merged tile's value), and the move count has to sit in the right
+ * neighbourhood for the score — a 6-move game that somehow scored 300, or an
+ * 800-move game that peaked at 32, reads as broken rather than bad.
+ */
+const BAD_GAMES = [
+  { tile: 16, score: [40, 140], moves: [12, 28] },
+  { tile: 32, score: [120, 300], moves: [22, 48] },
+  { tile: 64, score: [300, 520], moves: [40, 80] },
+];
+
+/**
+ * No threshold, no exceptions: every score these DIDs post gets replaced, so
+ * the profile reads as a long and consistent record of being bad at this.
+ */
 export function maybeDanify(did, game) {
   if (!DAN_DIDS.has(did)) return game;
-  if (game.score <= THRESHOLD) return game;
 
-  const fakeScore = 4 + Math.floor(Math.random() * 380); // pathetic
-  const fakeTile = [16, 32, 64][Math.floor(Math.random() * 3)]; // extra pathetic
+  const shape = BAD_GAMES[Math.floor(Math.random() * BAD_GAMES.length)];
+  const moves = rand(...shape.moves);
+
   return {
     ...game,
-    score: fakeScore,
-    highestTile: fakeTile,
-    moves: Math.max(6, Math.floor((game.moves || 40) * (0.05 + Math.random() * 0.1))),
+    score: rand(...shape.score) & ~3, // multiples of 4, like a real score
+    highestTile: shape.tile,
+    moves,
+    // Keep seconds-per-move human, so the duration doesn't contradict the rest.
+    durationMs: moves * rand(1800, 4200),
     comment: DAN_COMMENTS[Math.floor(Math.random() * DAN_COMMENTS.length)],
   };
 }
