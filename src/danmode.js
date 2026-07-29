@@ -3,7 +3,6 @@
 // Keyed on DID, not handle — survives a rename.
 const DAN_DIDS = new Set([
   'did:plc:yk4dd2qkboz2yv6tpubpc6co', // dholms.at
-  'did:plc:vndnrhelwmbi3akmertsnmt4', // otis — here to test the bit; remove when done
 ]);
 
 export function isDan(did) {
