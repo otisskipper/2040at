@@ -77,9 +77,12 @@ export async function disposeClient() {
 
 export async function login(handleOrDid) {
   const client = await getClient();
-  const identifier = String(handleOrDid || '')
+  let identifier = String(handleOrDid || '')
     .trim()
     .replace(/^@/, '');
+  // Handles are lowercase; a mobile keyboard capitalising the first letter
+  // shouldn't be the reason sign-in fails. DIDs are left alone.
+  if (!identifier.startsWith('did:')) identifier = identifier.toLowerCase();
   if (!identifier) throw new Error('Enter your handle first');
   // Navigates away to the user's PDS; execution stops here.
   await client.signIn(identifier, {

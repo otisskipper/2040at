@@ -11,10 +11,28 @@ function createSearch() {
     placeholder: 'Find a player…',
     autocomplete: 'off',
     spellcheck: 'false',
+    // Handles are lowercase and dot-separated; every mobile keyboard nicety
+    // actively mangles them.
+    autocapitalize: 'none',
+    autocorrect: 'off',
+    enterkeyhint: 'search',
     'aria-label': 'Find a player',
   });
   const results = el('div', { class: 'search__results', hidden: true });
   const wrap = el('div', { class: 'search' }, [input, results]);
+
+  // On touch, tapping a result blurs the input first. If the blur handler
+  // tears the list down before the click lands, the tap does nothing — which
+  // is exactly how this failed on a phone. Swallowing pointerdown keeps focus
+  // on the input so the click still reaches the button.
+  results.addEventListener('pointerdown', (e) => e.preventDefault());
+
+  function go(handle) {
+    input.value = '';
+    close();
+    input.blur(); // let the on-screen keyboard get out of the way
+    location.hash = `#/u/${handle}`;
+  }
 
   let timer;
   let seq = 0;
@@ -34,11 +52,7 @@ function createSearch() {
           el('button', {
             class: 'search__hit',
             type: 'button',
-            onclick: () => {
-              input.value = '';
-              close();
-              location.hash = `#/u/${a.handle}`;
-            },
+            onclick: () => go(a.handle),
           }, [
             a.avatar
               ? el('img', { class: 'search__avatar', src: a.avatar, alt: '' })
@@ -76,10 +90,7 @@ function createSearch() {
       input.blur();
     }
     if (e.key === 'Enter' && input.value.trim()) {
-      const q = input.value.trim().replace(/^@/, '');
-      input.value = '';
-      close();
-      location.hash = `#/u/${q}`;
+      go(input.value.trim().replace(/^@/, '').toLowerCase());
     }
   });
 
@@ -101,6 +112,9 @@ function createAuthControl() {
       placeholder: 'you.bsky.social',
       autocomplete: 'username',
       spellcheck: 'false',
+      autocapitalize: 'none',
+      autocorrect: 'off',
+      enterkeyhint: 'go',
       'aria-label': 'Your Bluesky handle',
     });
     const button = el('button', { class: 'btn btn--sm', type: 'submit', text: 'Sign in' });

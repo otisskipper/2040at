@@ -797,21 +797,120 @@ textarea:focus {
   gap: 16px;
 }
 
-@media (max-width: 520px) {
+/* --- mobile --------------------------------------------------------------- */
+
+@media (max-width: 600px) {
+  #app {
+    padding: 12px 12px 48px;
+    gap: 16px;
+  }
+
+  /* Search and the sign-in form each need a full row. Sharing one leaves both
+     too narrow to type a handle into. */
+  .topbar {
+    gap: 10px;
+  }
   .topbar__right {
     width: 100%;
     margin-left: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
   .search,
-  .search__input,
+  .auth,
   .auth__form {
-    flex: 1;
+    width: 100%;
   }
   .search__input,
   .auth__input {
     width: 100%;
+    /* Under 16px, iOS Safari zooms the page on focus and never zooms back. */
+    font-size: 16px;
+  }
+  .auth__input {
+    flex: 1;
+    min-width: 0;
+  }
+  .auth__me {
+    justify-content: space-between;
   }
   .search__results {
     width: 100%;
+    left: 0;
+    right: auto;
   }
+  /* Comfortable thumb targets. */
+  .search__hit {
+    padding: 11px 12px;
+  }
+  .search__avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .scorebar {
+    flex-wrap: wrap;
+  }
+  .score {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
+  }
+  .btn--new {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .profile__head {
+    gap: 12px;
+  }
+  .profile__avatar {
+    width: 56px;
+    height: 56px;
+  }
+  .profile__name {
+    font-size: 22px;
+  }
+  .gamerow {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .gamerow__score {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .footer {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --board-size: min(460px, calc(100vw - 24px));
+  }
+}
+
+/* Keep the whole board reachable without scrolling on short viewports —
+   landscape phones especially. dvh tracks the actual visible area as mobile
+   browser chrome shows and hides; the floor stops it collapsing. */
+@supports (height: 100dvh) {
+  :root {
+    --board-size: max(220px, min(460px, calc(100vw - 32px), calc(100dvh - 300px)));
+  }
+  @media (max-width: 600px) {
+    :root {
+      --board-size: max(220px, min(460px, calc(100vw - 24px), calc(100dvh - 280px)));
+    }
+  }
+}
+
+/* Long result lists must not run off the bottom of a phone screen. */
+.search__results {
+  max-height: min(60vh, 380px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }

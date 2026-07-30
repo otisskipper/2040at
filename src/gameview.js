@@ -140,6 +140,9 @@ function createPostModal(onPosted) {
         placeholder: 'you.bsky.social',
         spellcheck: 'false',
         autocomplete: 'username',
+        autocapitalize: 'none',
+        autocorrect: 'off',
+        enterkeyhint: 'go',
       });
       const go = el('button', { class: 'btn', type: 'submit', text: 'Sign in to post' });
       const form = el('form', {
